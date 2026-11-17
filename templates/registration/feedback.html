@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}TapLokal - Sign-up complete{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card card-tl"><div class="card-body p-4 text-center">
+            <h2 style="color: var(--tl-navy);">Sign-up complete</h2>
+            <p class="mb-0">Your account was created successfully. You can now <a href="{% url 'login' %}">log in</a>.</p>
+        </div></div>
+    </div>
+</div>
+{% endblock %}

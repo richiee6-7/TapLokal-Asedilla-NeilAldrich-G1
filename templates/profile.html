@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}TapLokal - My Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center g-4">
+    <div class="col-lg-5">
+        <div class="card card-tl"><div class="card-body p-4">
+            <h2 class="mb-3" style="color: var(--tl-navy);">My Profile</h2>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+                <li class="list-group-item"><strong>Full name:</strong> {{ user.full_name }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                <li class="list-group-item"><strong>Mobile:</strong> {{ user.mobile_number }}</li>
+                <li class="list-group-item"><strong>Role:</strong> {{ user.get_role_display }}</li>
+                {% if user.resident_profile %}
+                <li class="list-group-item"><strong>Purok:</strong> {{ user.resident_profile.purok }}</li>
+                <li class="list-group-item"><strong>Address:</strong> {{ user.resident_profile.street_address }}</li>
+                <li class="list-group-item"><strong>Address verified:</strong> {{ user.resident_profile.is_verified|yesno:"Yes,Not yet" }}</li>
+                {% endif %}
+                <li class="list-group-item"><strong>Member since:</strong> {{ user.created_at|date:"M d, Y" }}</li>
+            </ul>
+        </div></div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-tl"><div class="card-body p-4">
+            <h2 class="mb-3" style="color: var(--tl-navy);">Update details</h2>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% include "includes/form_fields.html" %}
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </form>
+        </div></div>
+    </div>
+</div>
+{% endblock %}
