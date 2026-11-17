@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}TapLokal - Manage Accounts{% endblock %}
+
+{% block content %}
+<div class="card card-tl"><div class="card-body p-4">
+    <h2 class="mb-3" style="color: var(--tl-navy);">Manage Accounts</h2>
+
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-md-6">
+            <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search name, username, email, mobile">
+        </div>
+        <div class="col-md-3">
+            <select name="role" class="form-select">
+                <option value="">All roles</option>
+                <option value="RESIDENT" {% if role == 'RESIDENT' %}selected{% endif %}>Resident</option>
+                <option value="STAFF" {% if role == 'STAFF' %}selected{% endif %}>Staff</option>
+            </select>
+        </div>
+        <div class="col-md-3"><button type="submit" class="btn btn-primary w-100">Search</button></div>
+    </form>
+
+    <div class="table-responsive">
+    <table class="table align-middle">
+        <thead><tr><th>Name</th><th>Username</th><th>Contact</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for u in users %}
+            <tr>
+                <td>{{ u.full_name }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}<br><small class="text-secondary">{{ u.mobile_number }}</small></td>
+                <td>{{ u.get_role_display }}</td>
+                <td>{% if u.is_active %}<span class="badge text-bg-success">Active</span>{% else %}<span class="badge text-bg-secondary">Inactive</span>{% endif %}</td>
+                <td>
+                {% if u != user %}
+                    <form method="post" action="{% url 'toggle_user_active' u.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">{% if u.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+                    </form>
+                    {% if not u.is_superuser %}
+                    <form method="post" action="{% url 'set_user_role' u.pk %}" class="d-inline-flex gap-1">
+                        {% csrf_token %}
+                        <select name="role" class="form-select form-select-sm">
+                            <option value="RESIDENT" {% if u.role == 'RESIDENT' %}selected{% endif %}>Resident</option>
+                            <option value="STAFF" {% if u.role == 'STAFF' %}selected{% endif %}>Staff</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Set</button>
+                    </form>
+                    {% endif %}
+                {% else %}<small class="text-secondary">(you)</small>{% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6" class="text-center text-secondary">No accounts found.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <a href="{% url 'create_staff' %}" class="btn btn-gold">Add staff account</a>
+    <a href="{% url 'admin_panel' %}" class="btn btn-link">Back to admin panel</a>
+</div></div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}TapLokal - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="card card-tl"><div class="card-body p-4">
+    <h2 class="mb-1" style="color: var(--tl-navy);">Admin Panel</h2>
+    <p class="text-secondary">Signed in as barangay staff: <strong>{{ user.full_name|default:user.username }}</strong></p>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ total_users }}</strong>Total accounts</div></div>
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ total_residents }}</strong>Residents</div></div>
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ total_staff }}</strong>Staff</div></div>
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ inactive_users }}</strong>Inactive</div></div>
+    </div>
+    <a href="{% url 'manage_users' %}" class="btn btn-primary">Manage accounts</a>
+    <a href="{% url 'create_staff' %}" class="btn btn-gold">Add staff account</a>
+</div></div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}TapLokal - Resident Dashboard{% endblock %}
+
+{% block content %}
+<div class="card card-tl"><div class="card-body p-4">
+    <h2 class="mb-3" style="color: var(--tl-navy);">Welcome, {{ user.full_name|default:user.username }}!</h2>
+    <ul class="list-group mb-3">
+        <li class="list-group-item"><strong>Role:</strong> {{ user.get_role_display }}</li>
+        <li class="list-group-item"><strong>Purok:</strong> {{ user.resident_profile.purok }}</li>
+        <li class="list-group-item"><strong>Address:</strong> {{ user.resident_profile.street_address }}</li>
+        <li class="list-group-item"><strong>Address verified:</strong> {{ user.resident_profile.is_verified|yesno:"Yes,Not yet" }}</li>
+        <li class="list-group-item"><strong>Last login:</strong> {{ user.last_login|date:"M d, Y" }}</li>
+    </ul>
+    <a href="{% url 'profile' %}" class="btn btn-primary">View / edit profile</a>
+</div></div>
+{% endblock %}
