@@ -9,6 +9,7 @@ from django.views.generic import CreateView, ListView, RedirectView, TemplateVie
 from accounts.forms import StaffCreationForm
 from accounts.mixins import ResidentRequiredMixin, StaffRequiredMixin
 from accounts.models import CustomUser
+from reports.models import HazardReport, ReportStatus
 
 
 class DashboardView(LoginRequiredMixin, RedirectView):
@@ -22,6 +23,16 @@ class DashboardView(LoginRequiredMixin, RedirectView):
 
 class ResidentDashboardView(ResidentRequiredMixin, TemplateView):
     template_name = "dashboard/home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        reports = HazardReport.objects.filter(reported_by=self.request.user)
+        context["total_reports"] = reports.count()
+        context["pending_reports"] = reports.filter(status=ReportStatus.PENDING).count()
+        context["in_review_reports"] = reports.filter(status=ReportStatus.IN_REVIEW).count()
+        context["resolved_reports"] = reports.filter(status=ReportStatus.RESOLVED).count()
+        context["recent_reports"] = reports.select_related("hazard_type")[:5]
+        return context
 
 
 # ---------- Custom admin panel (staff only; Django admin is not used) ----------

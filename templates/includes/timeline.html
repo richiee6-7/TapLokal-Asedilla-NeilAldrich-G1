@@ -1,0 +1,14 @@
+<ol class="list-group list-group-numbered">
+    {% for entry in history %}
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div class="ms-2 me-auto">
+            <div class="fw-semibold">{% include "includes/status_badge.html" with status=entry.status %}</div>
+            {% if entry.remarks %}<div>{{ entry.remarks }}</div>{% endif %}
+            <small class="text-secondary">by {{ entry.changed_by.full_name|default:entry.changed_by.username }}</small>
+        </div>
+        <small class="text-secondary">{{ entry.changed_at|date:"M d, Y h:i A" }}</small>
+    </li>
+    {% empty %}
+    <li class="list-group-item text-secondary">No status changes yet.</li>
+    {% endfor %}
+</ol>

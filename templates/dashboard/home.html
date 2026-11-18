@@ -3,15 +3,40 @@
 {% block title %}TapLokal - Resident Dashboard{% endblock %}
 
 {% block content %}
+<div class="card card-tl mb-4"><div class="card-body p-4">
+    <h2 class="mb-1" style="color: var(--tl-navy);">Welcome, {{ user.full_name|default:user.username }}!</h2>
+    <p class="text-secondary mb-3">{{ user.resident_profile.purok }} &middot; {{ user.resident_profile.street_address }}
+        &middot; Address verified: {{ user.resident_profile.is_verified|yesno:"Yes,Not yet" }}</p>
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ total_reports }}</strong>My reports</div></div>
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ pending_reports }}</strong>Pending</div></div>
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ in_review_reports }}</strong>In review</div></div>
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ resolved_reports }}</strong>Resolved</div></div>
+    </div>
+    <a href="{% url 'report_create' %}" class="btn btn-gold">Report a hazard</a>
+    <a href="{% url 'my_reports' %}" class="btn btn-primary">My reports</a>
+    <a href="{% url 'profile' %}" class="btn btn-outline-secondary">My profile</a>
+</div></div>
+
 <div class="card card-tl"><div class="card-body p-4">
-    <h2 class="mb-3" style="color: var(--tl-navy);">Welcome, {{ user.full_name|default:user.username }}!</h2>
-    <ul class="list-group mb-3">
-        <li class="list-group-item"><strong>Role:</strong> {{ user.get_role_display }}</li>
-        <li class="list-group-item"><strong>Purok:</strong> {{ user.resident_profile.purok }}</li>
-        <li class="list-group-item"><strong>Address:</strong> {{ user.resident_profile.street_address }}</li>
-        <li class="list-group-item"><strong>Address verified:</strong> {{ user.resident_profile.is_verified|yesno:"Yes,Not yet" }}</li>
-        <li class="list-group-item"><strong>Last login:</strong> {{ user.last_login|date:"M d, Y" }}</li>
-    </ul>
-    <a href="{% url 'profile' %}" class="btn btn-primary">View / edit profile</a>
+    <h3 class="h5 mb-3" style="color: var(--tl-navy);">Recent reports</h3>
+    <div class="table-responsive">
+    <table class="table align-middle mb-0">
+        <thead><tr><th>#</th><th>Type</th><th>Address</th><th>Status</th><th>Filed</th><th></th></tr></thead>
+        <tbody>
+        {% for report in recent_reports %}
+            <tr>
+                <td>{{ report.pk }}</td><td>{{ report.hazard_type.name }}</td>
+                <td>{{ report.street_address|truncatechars:40 }}</td>
+                <td>{% include "includes/status_badge.html" with status=report.status %}</td>
+                <td>{{ report.created_at|date:"M d, Y" }}</td>
+                <td><a href="{% url 'report_detail' report.pk %}" class="btn btn-sm btn-outline-primary">View</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6" class="text-center text-secondary">You have not reported any hazards yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
 </div></div>
 {% endblock %}
