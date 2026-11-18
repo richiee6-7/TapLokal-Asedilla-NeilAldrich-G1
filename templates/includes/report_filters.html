@@ -1,0 +1,11 @@
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">{{ filter_form.q }}</div>
+    <div class="col-md-2">{{ filter_form.status }}</div>
+    <div class="col-md-3">{{ filter_form.hazard_type }}</div>
+    <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-fill">Search</button>
+        <a href="{{ request.path }}" class="btn btn-outline-secondary">Reset</a>
+    </div>
+    <div class="col-md-3"><label class="form-text">From</label>{{ filter_form.date_from }}</div>
+    <div class="col-md-3"><label class="form-text">To</label>{{ filter_form.date_to }}</div>
+</form>

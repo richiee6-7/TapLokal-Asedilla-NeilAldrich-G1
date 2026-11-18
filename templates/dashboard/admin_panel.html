@@ -3,16 +3,50 @@
 {% block title %}TapLokal - Admin Panel{% endblock %}
 
 {% block content %}
-<div class="card card-tl"><div class="card-body p-4">
+<div class="card card-tl mb-4"><div class="card-body p-4">
     <h2 class="mb-1" style="color: var(--tl-navy);">Admin Panel</h2>
     <p class="text-secondary">Signed in as barangay staff: <strong>{{ user.full_name|default:user.username }}</strong></p>
+
+    <h3 class="h6 text-secondary">Hazard reports</h3>
+    <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ total_reports }}</strong>Total</div></div>
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ pending_reports }}</strong>Pending</div></div>
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ in_review_reports }}</strong>In review</div></div>
+        <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ resolved_reports }}</strong>Resolved</div></div>
+    </div>
+
+    <h3 class="h6 text-secondary">Accounts</h3>
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ total_users }}</strong>Total accounts</div></div>
         <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ total_residents }}</strong>Residents</div></div>
         <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ total_staff }}</strong>Staff</div></div>
         <div class="col-6 col-md-3"><div class="stat-box"><strong>{{ inactive_users }}</strong>Inactive</div></div>
     </div>
-    <a href="{% url 'manage_users' %}" class="btn btn-primary">Manage accounts</a>
-    <a href="{% url 'create_staff' %}" class="btn btn-gold">Add staff account</a>
+
+    <a href="{% url 'staff_reports' %}" class="btn btn-gold">Hazard reports</a>
+    <a href="{% url 'hazard_types' %}" class="btn btn-primary">Hazard types</a>
+    <a href="{% url 'manage_users' %}" class="btn btn-outline-primary">Manage accounts</a>
+    <a href="{% url 'create_staff' %}" class="btn btn-outline-secondary">Add staff account</a>
+</div></div>
+
+<div class="card card-tl"><div class="card-body p-4">
+    <h3 class="h5 mb-3" style="color: var(--tl-navy);">Latest reports</h3>
+    <div class="table-responsive">
+    <table class="table align-middle mb-0">
+        <thead><tr><th>#</th><th>Type</th><th>Reported by</th><th>Status</th><th>Filed</th><th></th></tr></thead>
+        <tbody>
+        {% for report in recent_reports %}
+            <tr>
+                <td>{{ report.pk }}</td><td>{{ report.hazard_type.name }}</td><td>{{ report.reported_by.full_name }}</td>
+                <td>{% include "includes/status_badge.html" with status=report.status %}</td>
+                <td>{{ report.created_at|date:"M d, Y" }}</td>
+                <td><a href="{% url 'staff_report_detail' report.pk %}" class="btn btn-sm btn-outline-primary">Open</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6" class="text-center text-secondary">No hazard reports yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
 </div></div>
 {% endblock %}

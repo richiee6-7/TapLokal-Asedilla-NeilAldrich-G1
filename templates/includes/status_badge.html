@@ -1,0 +1,5 @@
+{% if status == 'PENDING' %}<span class="badge text-bg-warning">Pending</span>
+{% elif status == 'IN_REVIEW' %}<span class="badge text-bg-info">In Review</span>
+{% elif status == 'RESOLVED' %}<span class="badge text-bg-success">Resolved</span>
+{% elif status == 'READY_FOR_PICKUP' %}<span class="badge text-bg-success">Ready for Pickup</span>
+{% else %}<span class="badge text-bg-secondary">{{ status }}</span>{% endif %}

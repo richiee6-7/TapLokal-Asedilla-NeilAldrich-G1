@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load l10n %}
+
+{% block title %}TapLokal - Report #{{ report.pk }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>#map { height: 260px; border-radius: .5rem; }</style>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card card-tl"><div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h2 class="mb-0" style="color: var(--tl-navy);">Report #{{ report.pk }} - {{ report.hazard_type.name }}</h2>
+                {% include "includes/status_badge.html" with status=report.status %}
+            </div>
+            <dl class="row">
+                <dt class="col-sm-4">Address</dt><dd class="col-sm-8">{{ report.street_address }}</dd>
+                <dt class="col-sm-4">Description</dt><dd class="col-sm-8">{{ report.description|linebreaksbr }}</dd>
+                <dt class="col-sm-4">Priority</dt><dd class="col-sm-8">{{ report.hazard_type.get_priority_level_display }}</dd>
+                <dt class="col-sm-4">Filed</dt><dd class="col-sm-8">{{ report.created_at|date:"M d, Y h:i A" }}</dd>
+                {% if report.resolved_at %}<dt class="col-sm-4">Resolved</dt><dd class="col-sm-8">{{ report.resolved_at|date:"M d, Y h:i A" }}</dd>{% endif %}
+            </dl>
+            {% if report.photo %}<img src="{{ report.photo.url }}" alt="Hazard photo" class="img-fluid rounded mb-3">{% endif %}
+            <div id="map" class="mb-3"></div>
+
+            {% if report.is_editable %}
+            <a href="{% url 'report_edit' report.pk %}" class="btn btn-primary">Edit</a>
+            <a href="{% url 'report_delete' report.pk %}" class="btn btn-outline-danger">Delete</a>
+            {% else %}
+            <p class="form-text mb-0">This report is being handled by barangay staff and can no longer be edited or deleted.</p>
+            {% endif %}
+            <a href="{% url 'my_reports' %}" class="btn btn-link">Back to my reports</a>
+        </div></div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card card-tl"><div class="card-body p-4">
+            <h3 class="h5 mb-3" style="color: var(--tl-navy);">Status timeline</h3>
+            {% include "includes/timeline.html" %}
+        </div></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    const pos = [{{ report.latitude|unlocalize }}, {{ report.longitude|unlocalize }}];
+    const map = L.map("map").setView(pos, 17);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19, attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+    L.marker(pos).addTo(map);
+</script>
+{% endblock %}
