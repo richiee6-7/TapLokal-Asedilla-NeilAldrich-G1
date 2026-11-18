@@ -46,6 +46,12 @@ class AdminPanelView(StaffRequiredMixin, TemplateView):
         context["total_residents"] = users.filter(role=CustomUser.Role.RESIDENT).count()
         context["total_staff"] = users.filter(role=CustomUser.Role.STAFF).count()
         context["inactive_users"] = users.filter(is_active=False).count()
+        reports = HazardReport.objects
+        context["total_reports"] = reports.count()
+        context["pending_reports"] = reports.filter(status=ReportStatus.PENDING).count()
+        context["in_review_reports"] = reports.filter(status=ReportStatus.IN_REVIEW).count()
+        context["resolved_reports"] = reports.filter(status=ReportStatus.RESOLVED).count()
+        context["recent_reports"] = reports.select_related("hazard_type", "reported_by")[:5]
         return context
 
 

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}TapLokal - Hazard Reports{% endblock %}
+
+{% block content %}
+<div class="card card-tl"><div class="card-body p-4">
+    <h2 class="mb-3" style="color: var(--tl-navy);">Hazard Reports</h2>
+
+    {% include "includes/report_filters.html" %}
+
+    <div class="table-responsive">
+    <table class="table align-middle">
+        <thead><tr><th>#</th><th>Type</th><th>Reported by</th><th>Address</th><th>Status</th><th>Filed</th><th></th></tr></thead>
+        <tbody>
+        {% for report in reports %}
+            <tr>
+                <td>{{ report.pk }}</td>
+                <td>{{ report.hazard_type.name }}<br><small class="text-secondary">{{ report.hazard_type.get_priority_level_display }}</small></td>
+                <td>{{ report.reported_by.full_name }}</td>
+                <td>{{ report.street_address|truncatechars:40 }}</td>
+                <td>{% include "includes/status_badge.html" with status=report.status %}</td>
+                <td>{{ report.created_at|date:"M d, Y" }}</td>
+                <td><a href="{% url 'staff_report_detail' report.pk %}" class="btn btn-sm btn-outline-primary">Open</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="7" class="text-center text-secondary">No reports found.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% include "includes/pagination.html" %}
+    <a href="{% url 'admin_panel' %}" class="btn btn-link">Back to admin panel</a>
+</div></div>
+{% endblock %}

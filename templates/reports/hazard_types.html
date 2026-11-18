@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}TapLokal - Hazard Types{% endblock %}
+
+{% block content %}
+<div class="card card-tl"><div class="card-body p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0" style="color: var(--tl-navy);">Hazard Types</h2>
+        <a href="{% url 'hazard_type_create' %}" class="btn btn-gold">Add hazard type</a>
+    </div>
+    <div class="table-responsive">
+    <table class="table align-middle">
+        <thead><tr><th>Name</th><th>Priority</th><th>Reports</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for t in hazard_types %}
+            <tr>
+                <td>{{ t.name }}<br><small class="text-secondary">{{ t.description|truncatechars:60 }}</small></td>
+                <td>{{ t.get_priority_level_display }}</td>
+                <td>{{ t.report_count }}</td>
+                <td>{% if t.is_active %}<span class="badge text-bg-success">Active</span>{% else %}<span class="badge text-bg-secondary">Inactive</span>{% endif %}</td>
+                <td>
+                    <a href="{% url 'hazard_type_edit' t.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <form method="post" action="{% url 'hazard_type_toggle' t.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">{% if t.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="text-center text-secondary">No hazard types yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <a href="{% url 'admin_panel' %}" class="btn btn-link">Back to admin panel</a>
+</div></div>
+{% endblock %}

@@ -11,13 +11,16 @@ Residents report a barangay hazard (flood, downed wires, uncollected trash, …)
 a hazard type, pinning the location on a map, entering the street address and description,
 and optionally uploading a photo. They can search/filter their reports, watch each report's
 status timeline, and edit or delete a report while it is still *Pending*.
-Staff manage the reports and hazard types (see the staff section below once merged).
+Barangay staff see every report in the Admin Panel, search and filter them by keyword,
+status, type, and date, open a report to update its status (Pending → In Review → Resolved)
+with remarks, and manage the hazard types (add, edit, activate/deactivate).
 
 Business rules implemented: only logged-in residents can file reports; each report is linked
 to its author; residents only see and change their own reports; edit/delete only while
 Pending (BR-11); every status is logged with who and when (BR-17); latitude/longitude and
 status are enforced by CHECK constraints (BR-07, BR-08, BR-09); inactive hazard types cannot
-be chosen for new reports (BR-10).
+be chosen for new reports and hazard types are deactivated, never deleted (BR-10); only staff
+can change statuses (BR-18).
 
 ## Structure
 - `taplokal/` – settings and root URLs
