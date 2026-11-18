@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}TapLokal - {{ page_title }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>#map { height: 320px; border-radius: .5rem; }</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-tl"><div class="card-body p-4">
+            <h2 class="mb-3" style="color: var(--tl-navy);">{{ page_title }}</h2>
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+
+                {% include "includes/field.html" with field=form.hazard_type %}
+                {% include "includes/field.html" with field=form.street_address %}
+                {% include "includes/field.html" with field=form.description %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Pin the location on the map</label>
+                    <div id="map"></div>
+                    {{ form.latitude }}{{ form.longitude }}
+                    {% for error in form.latitude.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    {% for error in form.longitude.errors %}{% if error not in form.latitude.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endif %}{% endfor %}
+                    <div class="d-flex justify-content-between mt-2">
+                        <span class="form-text" id="pin-status">Click the map to drop a pin.</span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="use-location">Use my location</button>
+                    </div>
+                </div>
+
+                {% include "includes/field.html" with field=form.photo %}
+                {% if form.instance.photo %}
+                <p class="form-text">Current photo: <a href="{{ form.instance.photo.url }}" target="_blank">view</a>. Choose a new file to replace it.</p>
+                {% endif %}
+
+                <button type="submit" class="btn btn-primary">Save report</button>
+                <a href="{% url 'my_reports' %}" class="btn btn-link">Cancel</a>
+            </form>
+        </div></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+    const latInput = document.getElementById("{{ form.latitude.id_for_label }}");
+    const lngInput = document.getElementById("{{ form.longitude.id_for_label }}");
+    const status = document.getElementById("pin-status");
+    const startLat = parseFloat(latInput.value), startLng = parseFloat(lngInput.value);
+    const hasPin = !isNaN(startLat) && !isNaN(startLng);
+
+    const map = L.map("map").setView(hasPin ? [startLat, startLng] : [10.3157, 123.8854], hasPin ? 17 : 13);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19, attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    let marker = hasPin ? L.marker([startLat, startLng]).addTo(map) : null;
+    if (hasPin) status.textContent = "Pinned: " + startLat.toFixed(6) + ", " + startLng.toFixed(6);
+
+    function setPin(lat, lng) {
+        latInput.value = lat.toFixed(6);
+        lngInput.value = lng.toFixed(6);
+        if (marker) { marker.setLatLng([lat, lng]); } else { marker = L.marker([lat, lng]).addTo(map); }
+        status.textContent = "Pinned: " + lat.toFixed(6) + ", " + lng.toFixed(6);
+    }
+    map.on("click", function (e) { setPin(e.latlng.lat, e.latlng.lng); });
+
+    document.getElementById("use-location").addEventListener("click", function () {
+        if (!navigator.geolocation) { status.textContent = "Location is not supported by this browser."; return; }
+        navigator.geolocation.getCurrentPosition(function (pos) {
+            setPin(pos.coords.latitude, pos.coords.longitude);
+            map.setView([pos.coords.latitude, pos.coords.longitude], 17);
+        }, function () { status.textContent = "Could not get your location. Click the map instead."; });
+    });
+})();
+</script>
+{% endblock %}
